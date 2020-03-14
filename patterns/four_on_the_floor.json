@@ -1,0 +1,30 @@
+{
+  "name": "Four on the floor",
+  "bpm": 120,
+  "instruments": [
+    {
+      "name": "hi_hat",
+      "symbol": "*"
+    },
+    {
+      "name": "bass_drum",
+      "symbol": "&"
+    },
+    {
+      "name": "snare_drum",
+      "symbol": "^"
+    }
+  ],
+  "pattern": [
+    {
+      "1":  ["bass_drum"],
+      "3":  ["hi_hat"],
+      "5":  ["snare_drum", "bass_drum"],
+      "7":  ["hi_hat"],
+      "9":  ["bass_drum"],
+      "11": ["hi_hat"],
+      "13": ["snare_drum","bass_drum"],
+      "15": ["hi_hat"]
+    }
+  ]
+}

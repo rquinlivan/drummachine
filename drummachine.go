@@ -6,26 +6,55 @@ import (
 )
 
 func main() {
-	time.Sleep(5*time.Second)
-	fmt.Println("Hi")
+	time.Sleep(5 * time.Second)
 
-	drumPattern := Drums {name:"Killin it", bpm: 128}
+	drumPattern := readFromFile("four_on_the_floor")
 	play(drumPattern)
 }
 
 type Instrument struct {
-	name string
+	name   string
 	symbol string
-	sound string // Optional
 }
 
-type Drums struct {
-	name string
-	bpm int
+type DrumPattern struct {
+	name        string
+	bpm         int
+	instruments []Instrument
+	patterns    map[int][]string
+}
+
+// Given a pattern name, return the DrumPattern.
+// This is read from the file at ./patterns/[patternName].json
+// TODO: read file
+func readFromFile(patternName string) DrumPattern {
+	instruments := []Instrument {
+		Instrument{
+			name:   "",
+			symbol: "",
+		},
+	}
+	patterns := map[int][]string {
+		1: []string {"hi_hat"},
+	}
+	return DrumPattern{
+		name: "Four on the floor",
+		bpm:  120,
+		instruments: instruments,
+		patterns: patterns,
+	}
 }
 
 // Play a drum pattern
-func play(drum Drums) {
-	delayMillis := int(drum.bpm / 60 * 1000)
-	time.Sleep(delayMillis * time.Millisecond)
+func play(drum DrumPattern) {
+	fmt.Println("Playing pattern '", drum.name, "' at", drum.bpm, "beats per minute")
+	measures := 10
+	delay := time.Duration(int(drum.bpm / 60 * 1000)) * time.Millisecond
+	for i := 0; i < measures; i++ {
+		for j := 1; j <= 16; j++ {
+			time.Sleep(delay)
+			fmt.Print("_")
+		}
+		fmt.Println("")
+	}
 }
