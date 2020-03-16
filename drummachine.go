@@ -8,7 +8,7 @@ import (
 func main() {
 	fmt.Println("####		 DRUM MACHINE		 ###")
 	drumPattern := ReadFromFile("four_on_the_floor")
-	Play(drumPattern)
+	Play(drumPattern, 10, ConsolePlayer, ConsoleRest, ConsoleMeasure)
 }
 
 type Instrument struct {
@@ -21,17 +21,6 @@ type DrumPattern struct {
 	bpm         int
 	instruments map[string]Instrument
 	patterns    map[int][]string
-}
-
-type Player interface {
-	play(instrument Instrument)
-}
-
-type TextualPlayer struct {
-}
-
-func (tp TextualPlayer) play(instrument Instrument) {
-	fmt.Print(instrument.symbol)
 }
 
 // Given a pattern name, return the DrumPattern.
@@ -59,12 +48,12 @@ func ReadFromFile(patternName string) DrumPattern {
 		7:  {"hi_hat"},
 		9:  {"bass_drum"},
 		11: {"hi_hat"},
-		13: {"snare_drum","bass_drum"},
+		13: {"snare_drum", "bass_drum"},
 		15: {"hi_hat"},
 	}
 	return DrumPattern{
 		name:        "Four on the floor",
-		bpm:         120,
+		bpm:         160,
 		instruments: instruments,
 		patterns:    patterns,
 	}
@@ -77,12 +66,26 @@ func GetDelay(bpm int) time.Duration {
 	return time.Duration(delayInMillis) * time.Millisecond
 }
 
+type Player func(instrument Instrument)
+type Rest func()
+type Measure func()
+
+func ConsolePlayer(instrument Instrument) {
+	fmt.Print(instrument.symbol)
+}
+
+func ConsoleRest() {
+	fmt.Print("_")
+}
+
+func ConsoleMeasure() {
+	fmt.Println("")
+}
+
 // Play a drum pattern
-func Play(drum DrumPattern) {
+func Play(drum DrumPattern, measures int, player Player, rest Rest, measure Measure) {
 	fmt.Println("Playing pattern '", drum.name, "' at", drum.bpm, "beats per minute")
-	measures := 10
 	delay := GetDelay(drum.bpm)
-	fmt.Println("Delay is ", delay)
 	for i := 0; i < measures; i++ {
 		for j := 1; j <= 16; j++ {
 			time.Sleep(delay)
@@ -92,15 +95,14 @@ func Play(drum DrumPattern) {
 				for _, patternKey := range patterns {
 					inst, instExists := drum.instruments[patternKey]
 					if instExists {
-						fmt.Print(inst.symbol)
+						player(inst)
 					} else {
-						fmt.Print("?")
+						rest()
 					}
 				}
 			case false:
-				fmt.Print("_")
+				rest()
 			}
 		}
-		fmt.Println("")
 	}
 }
