@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"strconv"
 	"time"
 )
 
 func main() {
 	fmt.Println("####		 DRUM MACHINE		 ###")
-	drumPattern := ReadFromFile("we_will_rock_you")
-	Play(drumPattern, 10, ConsolePlayer, ConsoleRest, ConsoleMeasure)
+	pattern := os.Args[1]
+	measures, _ := strconv.ParseInt(os.Args[2], 10, 16)
+	drumPattern := ReadFromFile(pattern)
+	Play(drumPattern, int(measures), ConsolePlayer, ConsoleRest, ConsoleMeasure)
 }
 
 // Represents an instrument. E.g., snare drum, cymbals, etc.
@@ -30,19 +34,18 @@ type DrumPattern struct {
 	Patterns    map[int][]string
 }
 
-// Given a pattern Name, return the DrumPattern.
-// This is read from the file at ./patterns/[patternName].json
-func ReadFromFile(patternName string) DrumPattern {
-	bytes, err := ioutil.ReadFile("patterns/" + patternName + ".json")
+// Given a pattern file path, return the DrumPattern.
+func ReadFromFile(path string) DrumPattern {
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Println(err)
-		panic("Can't read file " + patternName + ".json")
+		panic("Can't read file " + path)
 	}
 
 	var drumPattern DrumPattern
 	err = json.Unmarshal(bytes, &drumPattern)
 	if err != nil {
-		panic("Can't deserialize file " + patternName + ".json")
+		panic("Can't deserialize file " + path + ".json")
 	}
 	return drumPattern
 }
@@ -96,7 +99,7 @@ func ConsoleMeasure() {
  * - `Measure` defines optional behavior when the end of a measure is reached.
  */
 func Play(drum DrumPattern, measures int, player Player, rest Rest, measure Measure) {
-	fmt.Println("Playing pattern '", drum.Name, "' at", drum.Bpm, "beats per minute")
+	fmt.Println("Playing pattern '", drum.Name, "' at", drum.Bpm, "beats per minute for", measures, "measures")
 	delay := GetDelay(drum.Bpm)
 	for i := 0; i < measures; i++ {
 		for j := 1; j <= 16; j++ {
