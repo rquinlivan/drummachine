@@ -1,0 +1,28 @@
+{
+  "Name": "We Will Rock You",
+  "Bpm": 162,
+  "Instruments": {
+    "stomp": {
+      "Name": "stomp",
+      "Symbol": "S"
+    },
+    "clap": {
+      "Name": "clap",
+      "Symbol": "C"
+    }
+  },
+  "Patterns": {
+      "1":  ["stomp"],
+      "2":  ["stomp"],
+      "3":  ["clap"],
+      "5":  ["stomp"],
+      "6":  ["stomp"],
+      "7":  ["clap"],
+      "9":  ["stomp"],
+      "10":  ["stomp"],
+      "11":  ["clap"],
+      "13":  ["stomp"],
+      "14":  ["stomp"],
+      "15":  ["clap"]
+  }
+}

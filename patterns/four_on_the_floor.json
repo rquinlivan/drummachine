@@ -1,22 +1,21 @@
 {
-  "name": "Four on the floor",
-  "bpm": 120,
-  "instruments": [
-    {
-      "name": "hi_hat",
-      "symbol": "^"
+  "Name": "Four on the floor",
+  "Bpm": 120,
+  "Instruments": {
+    "hi_hat": {
+      "Name": "hi_hat",
+      "Symbol": "^"
     },
-    {
-      "name": "bass_drum",
-      "symbol": "&"
+    "bass_drum": {
+      "Name": "bass_drum",
+      "Symbol": "&"
     },
-    {
-      "name": "snare_drum",
-      "symbol": "*"
+    "snare_drum": {
+      "Name": "snare_drum",
+      "Symbol": "*"
     }
-  ],
-  "pattern": [
-    {
+  },
+  "Patterns": {
       "1":  ["bass_drum"],
       "3":  ["hi_hat"],
       "5":  ["snare_drum", "bass_drum"],
@@ -26,5 +25,4 @@
       "13": ["snare_drum","bass_drum"],
       "15": ["hi_hat"]
     }
-  ]
 }

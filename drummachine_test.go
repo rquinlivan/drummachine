@@ -14,26 +14,26 @@ func TestGetDelay(t *testing.T) {
 	for bpm, dur := range expectations {
 		actual := GetDelay(bpm)
 		if actual != dur {
-			t.Error("bpm ", bpm, "should equate to ", dur, "but was", actual)
+			t.Error("Bpm ", bpm, "should equate to ", dur, "but was", actual)
 		}
 	}
 }
 
 func TestPlayEmptyDrums(t *testing.T) {
 	emptyDrums := DrumPattern{
-		name: "test",
-		bpm:  100000,
-		instruments: map[string]Instrument{
-			"foo": {name: "foo", symbol: "?"},
+		Name: "test",
+		Bpm:  100000,
+		Instruments: map[string]Instrument{
+			"foo": {Name: "foo", Symbol: "?"},
 		},
 	}
 	drumsA := DrumPattern{
-		name: "test",
-		bpm:  100000,
-		instruments: map[string]Instrument{
-			"foo": {name: "foo", symbol: "?"},
+		Name: "test",
+		Bpm:  100000,
+		Instruments: map[string]Instrument{
+			"foo": {Name: "foo", Symbol: "?"},
 		},
-		patterns: map[int][]string{
+		Patterns: map[int][]string{
 			1: {"foo"},
 			2: {"foo"},
 			3: {"foo"},
@@ -62,7 +62,7 @@ func _TestPlayConfiguration(t *testing.T, pattern DrumPattern, measures int, out
 	restCount := 0
 	measureCount := 0
 	Play(pattern, measures, func(instrument Instrument) {
-		output += instrument.symbol
+		output += instrument.Symbol
 	}, func() {
 		output += " "
 		restCount++

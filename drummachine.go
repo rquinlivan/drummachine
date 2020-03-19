@@ -1,62 +1,50 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"time"
 )
 
 func main() {
 	fmt.Println("####		 DRUM MACHINE		 ###")
-	drumPattern := ReadFromFile("four_on_the_floor")
+	drumPattern := ReadFromFile("we_will_rock_you")
 	Play(drumPattern, 10, ConsolePlayer, ConsoleRest, ConsoleMeasure)
 }
 
+// Represents an instrument. E.g., snare drum, cymbals, etc.
+// Provide a unique Symbol and unique Name.
 type Instrument struct {
-	name   string
-	symbol string
+	Name   string
+	Symbol string
 }
 
+// Represents a pattern to be played, encapsulating both the set of Instruments
+// to be applied as well as which Instruments to play at each beat.
+// Must also provide a Name (merely metadata) and a Bpm setting.
 type DrumPattern struct {
-	name        string
-	bpm         int
-	instruments map[string]Instrument
-	patterns    map[int][]string
+	Name        string
+	Bpm         int
+	Instruments map[string]Instrument
+	Patterns    map[int][]string
 }
 
-// Given a pattern name, return the DrumPattern.
+// Given a pattern Name, return the DrumPattern.
 // This is read from the file at ./patterns/[patternName].json
-// TODO: read file
 func ReadFromFile(patternName string) DrumPattern {
-	instruments := map[string]Instrument{
-		"hi_hat": {
-			name:   "hi_hat",
-			symbol: "^",
-		},
-		"bass_drum": {
-			name:   "bass_drum",
-			symbol: "&",
-		},
-		"snare_drum": {
-			name:   "snare_drum",
-			symbol: "*",
-		},
+	bytes, err := ioutil.ReadFile("patterns/" + patternName + ".json")
+	if err != nil {
+		fmt.Println(err)
+		panic("Can't read file " + patternName + ".json")
 	}
-	patterns := map[int][]string{
-		1:  {"bass_drum"},
-		3:  {"hi_hat"},
-		5:  {"snare_drum", "bass_drum"},
-		7:  {"hi_hat"},
-		9:  {"bass_drum"},
-		11: {"hi_hat"},
-		13: {"snare_drum", "bass_drum"},
-		15: {"hi_hat"},
+
+	var drumPattern DrumPattern
+	err = json.Unmarshal(bytes, &drumPattern)
+	if err != nil {
+		panic("Can't deserialize file " + patternName + ".json")
 	}
-	return DrumPattern{
-		name:        "Four on the floor",
-		bpm:         160,
-		instruments: instruments,
-		patterns:    patterns,
-	}
+	return drumPattern
 }
 
 func GetDelay(bpm int) time.Duration {
@@ -66,34 +54,58 @@ func GetDelay(bpm int) time.Duration {
 	return time.Duration(delayInMillis) * time.Millisecond
 }
 
+// Player types
+
+// Instructions for how to "play" an instrument.
 type Player func(instrument Instrument)
+
+// Instructions for how a "play" a rest.
 type Rest func()
+
+// Instructions for how to "play" the end of a measure.
+// Note: this should likely be a no-op, but is a useful hook for
+// testing and console printing.
 type Measure func()
 
+
+// Console player
+
+// Write instrument symbols to console.
 func ConsolePlayer(instrument Instrument) {
-	fmt.Print(instrument.symbol)
+	fmt.Print(instrument.Symbol)
 }
 
+// Write rest to console.
 func ConsoleRest() {
 	fmt.Print("_")
 }
 
+// Write end of measure to console.
 func ConsoleMeasure() {
 	fmt.Println("")
 }
 
-// Play a drum pattern
+/* Play a drum pattern, defined in `drum DrumPattern`, for `measures` measures.
+ * The `Play` function itself just Instruments the playing, it doesn't define
+ * player behavior.
+ *
+ * That behavior is determined by injected functions for easy implemenation!
+ * To implement your own player, provide these three functions (defined above):
+ * - `Player` itself defines playing an `Instrument`.
+ * - `Rest` defines behavior if an `Instrument` is *not* played.
+ * - `Measure` defines optional behavior when the end of a measure is reached.
+ */
 func Play(drum DrumPattern, measures int, player Player, rest Rest, measure Measure) {
-	fmt.Println("Playing pattern '", drum.name, "' at", drum.bpm, "beats per minute")
-	delay := GetDelay(drum.bpm)
+	fmt.Println("Playing pattern '", drum.Name, "' at", drum.Bpm, "beats per minute")
+	delay := GetDelay(drum.Bpm)
 	for i := 0; i < measures; i++ {
 		for j := 1; j <= 16; j++ {
 			time.Sleep(delay)
-			patterns, present := drum.patterns[j]
+			patterns, present := drum.Patterns[j]
 			switch present {
 			case true:
 				for _, patternKey := range patterns {
-					inst, instExists := drum.instruments[patternKey]
+					inst, instExists := drum.Instruments[patternKey]
 					if instExists {
 						player(inst)
 					} else {
@@ -103,6 +115,9 @@ func Play(drum DrumPattern, measures int, player Player, rest Rest, measure Meas
 			case false:
 				rest()
 			}
+		}
+		if i != measures - 1 {
+			measure()
 		}
 	}
 }
