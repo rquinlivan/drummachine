@@ -52,30 +52,27 @@ func TestPlayEmptyDrums(t *testing.T) {
 			16: {"foo"},
 		},
 	}
-	drumsAPattern := "????????????????"
-	_TestPlayConfiguration(t, drumsA, 1, drumsAPattern, 0, 0)
-	_TestPlayConfiguration(t, emptyDrums,1, "", 160, 0)
+	_TestPlayConfiguration(t, drumsA, 1, 16, 0, 0)
+	_TestPlayConfiguration(t, emptyDrums,1, 0, 16, 0)
 }
 
-func _TestPlayConfiguration(t *testing.T, pattern DrumPattern, measures int, out string, rest int, measure int) {
-	output := ""
-	restCount := 0
-	measureCount := 0
+func _TestPlayConfiguration(t *testing.T, pattern DrumPattern, measures int, playCount int, restCount int, measureCount int) {
+	restCalls := 0
+	measureCalls := 0
+	playCalls := 0
 	Play(pattern, measures, func(instrument Instrument) {
-		output += instrument.Symbol
+		playCalls++
 	}, func() {
-		output += " "
-		restCount++
+		restCalls++
 	}, func() {
-		output += "END"
-		measureCount++
+		measureCalls++
 	})
 
-	if restCount != rest ||
-		measureCount != measure ||
-		output != out {
-		t.Error("Actual:     restCount ==", restCount, "measureCount ==", measureCount, "output ==", output)
-		t.Fatal("Expected:   restCount ==", rest, "measureCount ==", measure, "output ==", out)
+	if restCalls != restCount ||
+		measureCalls != measureCount ||
+		playCalls != playCount {
+		t.Error("Actual:     restCalls ==", restCalls, "measureCalls ==", measureCalls, "playCount ==", playCalls)
+		t.Fatal("Expected:   restCalls ==", restCount, "measureCalls ==", measureCount, "playCount ==", playCount)
 	}
 
 }
