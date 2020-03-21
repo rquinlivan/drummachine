@@ -34,3 +34,36 @@ A classic Queen jock jam!
 ## Test it
 
 `go test`
+
+## Developer's Guide
+
+### Pattern file JSON schema
+
+A pattern file must include the following fields:
+
+- `Name` (`string`):  the name of this pattern. (Metadata)
+- `Bpm` (`integer`): the tempo to play at.
+- `Instruments` (`map`): a map of instrument name to instrument definition.
+- `Patterns` (`map`): a map of position to instrument names. Defines the drum pattern.
+
+Instrument definition must include the following fields:
+- `Name`: a *unique* name. Used as a key  in the instrument map definition.
+- `Symbol`: a *unique* symbol. May be used as a key in the `Player`.
+
+### Implementing a player
+
+The project can be extended through implementing three functions:
+
+`Player`:
+
+Provides a function that play an instrument. In the sample `ConsolePlayer` this entails printing to console. 
+This is the main interface for implementation.
+
+`Rest`:
+
+Provides a function to implement a rest. In audio `Player`s, this will likely be a no-op.
+
+`Measure`:
+
+Provides a function to implement an end of a measure. In audio `Player`s, this will likely be a no-op.
+
