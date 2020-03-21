@@ -117,11 +117,25 @@ func TestPlayEmptyDrums(t *testing.T) {
 			1: {"foo"},
 		},
 	}
+	badDrums := DrumPattern{
+		Name: "test",
+		Bpm:  100000,
+		Instruments: map[string]Instrument{
+			"foo": {Name: "foo", Symbol: "?"},
+			"bar": {Name: "bar", Symbol: "("},
+			"baz": {Name: "baz", Symbol: ")"},
+		},
+		Patterns: map[int][]string{
+			1: {"qux"},
+		},
+	}
+	_TestPlayConfiguration(t, emptyDrums,1, 0, 16, 0)
 	_TestPlayConfiguration(t, drumsA, 1, 16, 0, 0)
 	_TestPlayConfiguration(t, drumsB, 1, 32, 0, 0)
 	_TestPlayConfiguration(t, drumsC, 1, 48, 0, 0)
 	_TestPlayConfiguration(t, drumsD, 10, 10, 150, 9)
-	_TestPlayConfiguration(t, emptyDrums,1, 0, 16, 0)
+	_TestPlayConfiguration(t, badDrums, 1, 0, 16, 0)
+	_TestPlayConfiguration(t, badDrums, 10, 0, 160, 9)
 }
 
 // Test a configured DrumPattern
